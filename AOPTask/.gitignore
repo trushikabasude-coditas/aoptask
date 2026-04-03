@@ -1,0 +1,108 @@
+HELP.md
+target/
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+@Service
+public class OrderService {
+
+    @Autowired
+    private OrderRepository orderRepo;
+
+    @Autowired
+    private ProductRepository productRepo;
+    public Order placeOrder(Long userId, Long productId, int quantity) {
+
+        Product product = productRepo.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        if (product.getStock() < quantity) {
+            throw new RuntimeException("Insufficient stock");
+        }
+
+        product.setStock(product.getStock() - quantity);
+        productRepo.save(product);
+
+        Order order = new Order();
+        order.setUserId(userId);
+        order.setProductId(productId);
+        order.setQuantity(quantity);
+        order.setStatus("CREATED");
+
+        return orderRepo.save(order);
+    }
+
+
+    public Order cancelOrder(Long userId, Long orderId) {
+
+        Order order = orderRepo.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        if (!order.getUserId().equals(userId)) {
+            throw new RuntimeException("You cannot cancel this order");
+        }
+
+        order.setStatus("CANCELLED");
+
+        return orderRepo.save(order);
+    }
+}
+@Aspect
+@Component
+public class PerformanceAspect {
+
+    // Apply to ALL methods in service layer
+    @Around("execution(* com.example.ecommerce.service..(..))")
+    public Object monitorPerformance(ProceedingJoinPoint joinPoint) throws Throwable {
+
+        // start time
+        long startTime = System.currentTimeMillis();
+
+        // execute method
+        Object result = joinPoint.proceed();
+
+        // end time
+        long endTime = System.currentTimeMillis();
+
+        // method performance
+        String methodName = joinPoint.getSignature().toShortString();
+        long executionTime = endTime - startTime;
+
+        // log output
+        System.out.println(
+                "[PERFORMANCE] Method: " + methodName +
+                " | Time: " + executionTime + " ms" +
+                " | Timestamp: " + new Date()
+        );
+
+        return result;
+    }
+}
