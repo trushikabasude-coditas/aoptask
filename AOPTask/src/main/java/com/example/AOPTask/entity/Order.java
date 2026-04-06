@@ -15,6 +15,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
+
 public class Order {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
@@ -23,5 +24,6 @@ public class Order {
     private Long productId;
     @Positive
     private int quantity;
+
     private String status;
 }

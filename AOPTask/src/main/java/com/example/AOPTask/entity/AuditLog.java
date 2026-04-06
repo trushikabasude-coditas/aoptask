@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Date;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -27,4 +29,4 @@ public class AuditLog {
         public String getAction() { return action; }
         public String getMethod() { return method; }
     }
-}
+

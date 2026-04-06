@@ -19,5 +19,4 @@ public class AuditStore {
         return logs;
     }
 }
-{
-}
+

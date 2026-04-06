@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 public class ProductService {
     @Autowired
     private ProductRepository productRepository;
-
     public  Product updateProduct(Long userId,Long productId,double price,int stock){
         Product product=productRepository.findById(productId).orElseThrow(()->new RuntimeException("Product Not found"));
         //update

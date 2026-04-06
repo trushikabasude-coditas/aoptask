@@ -81,28 +81,37 @@ public class PerformanceAspect {
 
     // Apply to ALL methods in service layer
     @Around("execution(* com.example.ecommerce.service..(..))")
-    public Object monitorPerformance(ProceedingJoinPoint joinPoint) throws Throwable {
+    public Object monitorPerformance(ProceedingJoinPoint joinPoint) t
+    @AfterReturning(
+        pointcut = "execution(* com.example.ecommerce.service.ResumeService.uploadResume(..))",
+        returning = "result"
+    )
+    public void logUploadSuccess(JoinPoint jp, Object result) {
 
-        // start time
-        long startTime = System.currentTimeMillis();
+        Resume resume = (Resume) jp.getArgs()[0];
 
-        // execute method
-        Object result = joinPoint.proceed();
+        System.out.println(" RESUME UPLOAD SUCCESS");
+        System.out.println("Name: " + resume.getName());
+        System.out.println("Email: " + resume.getEmail());
+        System.out.println("Method: " + jp.getSignature().toShortString());
+        System.out.println("Timestamp: " + new Date());
 
-        // end time
-        long endTime = System.currentTimeMillis();
+        // optional analytics
+        System.out.println("Analytics: Upload success recorded");
+    }@AfterThrowing(
+         pointcut = "execution(* com.example.ecommerce.service.ResumeService.uploadResume(..))",
+         throwing = "ex"
+     )
+     public void logUploadFailure(JoinPoint jp, Exception ex) {
 
-        // method performance
-        String methodName = joinPoint.getSignature().toShortString();
-        long executionTime = endTime - startTime;
+         Resume resume = (Resume) jp.getArgs()[0];
 
-        // log output
-        System.out.println(
-                "[PERFORMANCE] Method: " + methodName +
-                " | Time: " + executionTime + " ms" +
-                " | Timestamp: " + new Date()
-        );
+         System.out.println(" RESUME UPLOAD FAILED");
+         System.out.println("Name: " + resume.getName());
+         System.out.println("Error: " + ex.getMessage());
+         System.out.println("Method: " + jp.getSignature().toShortString());
+         System.out.println("Timestamp: " + new Date());
 
-        return result;
-    }
-}
+         // alert
+         System.out.println("Alert: Resume upload issue detected");
+     }

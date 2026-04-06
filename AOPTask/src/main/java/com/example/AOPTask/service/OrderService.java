@@ -6,15 +6,15 @@ import com.example.AOPTask.repository.ProductRepository;
 import jakarta.persistence.criteria.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
-
 @Service
+
 public class OrderService {
     @Autowired
     private ProductRepository prodRepository;
     @Autowired
     private OrderRepository orderRepository;
+
     public Order placeOrder(Long userId,Long productId,int quantity){
         Product product=prodRepository.findById(productId)
                 .orElseThrow(()->new RuntimeException("Product Not found"));
@@ -23,7 +23,7 @@ public class OrderService {
         throw new RuntimeException("Stocks are not there !!!");
     }
     //reduce stock
-    product.setStock(product.getStock()-quantity);
+     product.setStock(product.getStock()-quantity);
      prodRepository.save(product);
      Order order=new Order();
      order.setUserId(userId);
@@ -38,7 +38,7 @@ public class OrderService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
 
-        if (!order.getUserId().equals(userId)) {
+        if (!order.getUserId.equals(userId)) {
             throw new RuntimeException("You cannot cancel this order");
         }
 
